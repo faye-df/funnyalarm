@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Voice Alarm - 觉醒剧场</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入一款带有几何感和可爱属性的无衬线字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            background-color: #f3f4f6; /* 外围底色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* 核心 Neo-Brutalism (粗野可爱风) 样式字典 */
+        .app-container {
+            width: 100%;
+            max-width: 390px; /* 模拟 iPhone 宽度 */
+            height: 100vh;
+            max-height: 844px;
+            background-color: #fdf2f8; /* 默认马卡龙粉 */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.5s ease;
+        }
+
+        @media (min-width: 400px) {
+            .app-container {
+                height: 90vh;
+                border-radius: 40px;
+                border: 8px solid #000;
+                box-shadow: 12px 12px 0px 0px #000; /* 标志性的硬阴影 */
+            }
+        }
+
+        /* 粗边框胶囊按钮 */
+        .btn-brutal {
+            background-color: #fff;
+            border: 4px solid #000;
+            border-radius: 9999px; /* 极致圆角 */
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px 0px #000;
+            transition: all 0.1s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-brutal:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+        /* 粗边框卡片 */
+        .card-brutal {
+            background-color: #fff;
+            border: 4px solid #000;
+            border-radius: 32px;
+            box-shadow: 6px 6px 0px 0px #000;
+        }
+
+        /* 拟人化状态精灵 */
+        .mascot {
+            width: 140px;
+            height: 120px;
+            background-color: #bfdbfe; /* 默认婴儿蓝 */
+            border: 6px solid #000;
+            border-radius: 60px 50px 70px 40px; /* 不规则的可爱形状 */
+            position: relative;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            box-shadow: inset -8px -8px 0px rgba(0,0,0,0.1), 6px 6px 0px 0px #000;
+            transition: all 0.3s ease;
+        }
+
+        /* 动画效果 */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-2deg); }
+            20% { transform: translate(-3px, 0px) rotate(2deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(2deg); }
+            50% { transform: translate(-1px, 2px) rotate(-2deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-2deg); }
+            80% { transform: translate(-1px, -1px) rotate(2deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-2deg); }
+        }
+        .animate-shake { animation: shake 0.5s infinite; }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-breathe { animation: breathe 3s infinite ease-in-out; }
+
+        /* 视图切换逻辑 */
+        .view-section {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 2rem 1.5rem;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: inherit;
+        }
+        .view-active { display: flex; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 暗黑模式主题覆盖 */
+        .theme-dark { background-color: #1e1b4b !important; }
+        .theme-dark .text-slate-800 { color: #fff !important; }
+        .theme-dark .text-slate-500 { color: #a5b4fc !important; }
+        .theme-dark .card-brutal { background-color: #312e81; color: white; border-color: #a5b4fc; box-shadow: 6px 6px 0px 0px #a5b4fc;}
+        .theme-dark .btn-brutal { background-color: #c084fc; border-color: #fff; box-shadow: 4px 4px 0px 0px #fff; }
+        .theme-dark .mascot { background-color: #000; border-color: #a5b4fc; box-shadow: inset -8px -8px 0px rgba(255,255,255,0.2), 6px 6px 0px 0px #a5b4fc;}
+    </style>
+</head>
+<body>
+
+<div id="app" class="app-container">
+
+    <!-- 顶部状态栏区域 (辅助功能) -->
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="toggleTheme()" class="w-10 h-10 rounded-full border-2 border-black bg-white flex items-center justify-center text-xl shadow-[2px_2px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all">
+            🎭
+        </button>
+    </div>
+
+    <!-- 视图 1：极简时钟首页 (Idle) -->
+    <div id="view-idle" class="view-section view-active justify-between">
+        <!-- 时钟主体：绝对的焦点 -->
+        <div class="mt-12 text-center">
+            <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Current Time</h2>
+            <div id="clock-display" class="text-7xl font-bold text-slate-800 tracking-tighter tabular-nums">00:00</div>
+            <div id="date-display" class="text-lg font-semibold text-slate-500 mt-2">--</div>
+        </div>
+
+        <!-- 状态精灵 (安静睡觉) -->
+        <div class="flex-grow flex flex-col items-center justify-center relative">
+            <div class="text-xl font-bold text-slate-400 absolute top-0 animate-bounce">z Z z</div>
+            <div class="mascot animate-breathe" id="mascot-idle">
+                <!-- 闭眼表情 -->
+                <span style="transform: translateY(-5px);">- ⩊ -</span>
+            </div>
+            <div class="mt-8 text-center px-4 py-2 card-brutal inline-block">
+                <span class="font-bold text-sm text-slate-800">⏳ 闹钟设于 07:30 AM</span>
+            </div>
+        </div>
+
+        <!-- 底部操作：仅保留最核心按钮 -->
+        <div class="pb-6">
+            <button onclick="triggerAlarm()" class="btn-brutal w-full py-4 text-xl flex justify-center items-center gap-2 bg-yellow-200">
+                🔔 模拟闹钟响铃
+            </button>
+        </div>
+    </div>
+
+    <!-- 视图 2：响铃与语音交互 (Ringing & Listening) -->
+    <div id="view-ringing" class="view-section justify-between bg-red-100">
+        <div class="mt-8 text-center">
+            <h2 class="text-2xl font-bold text-slate-800 animate-pulse">WAKE UP!</h2>
+            <p class="text-slate-600 font-semibold mt-1">你的专车已在楼下</p>
+        </div>
+
+        <!-- 状态精灵 (震惊/震动) -->
+        <div class="flex-grow flex flex-col items-center justify-center">
+            <div class="mascot animate-shake bg-yellow-300" id="mascot-ringing">
+                <!-- 震惊表情 -->
+                <span>O ▱ O</span>
+            </div>
+
+            <!-- 剧本台词卡片 -->
+            <div class="card-brutal mt-10 p-6 w-full relative bg-white">
+                <div class="absolute -top-4 left-6 bg-black text-white px-3 py-1 rounded-full text-xs font-bold border-2 border-white">
+                    今日剧本：财政大臣
+                </div>
+                <p class="text-sm font-semibold text-slate-500 mb-2">清理嗓子，大声念出：</p>
+                <p class="text-2xl font-black text-slate-800 tracking-tight leading-none">
+                    "One million,<br>two million..."
+                </p>
+            </div>
+        </div>
+
+        <!-- 语音录入交互区 -->
+        <div class="pb-6 space-y-3">
+            <div id="speech-status" class="text-center text-sm font-bold text-slate-500 h-6"></div>
+            <button id="btn-speak" onclick="startListening()" class="btn-brutal w-full py-4 text-xl bg-blue-300 flex justify-center items-center gap-2">
+                🎤 按住/点击 说话
+            </button>
+            <button onclick="forceSuccess()" class="w-full py-2 text-xs font-bold text-slate-400 underline underline-offset-4 decoration-2 hover:text-slate-600">
+                (设备不支持？点击直接跳过)
+            </button>
+        </div>
+    </div>
+
+    <!-- 视图 3：成功与状态反馈 (Feedback) -->
+    <div id="view-success" class="view-section justify-between bg-green-100">
+        <div class="mt-8 text-center">
+            <h2 class="text-xl font-bold text-slate-500 uppercase">State Switched</h2>
+        </div>
+
+        <!-- 状态精灵 (戴墨镜/得意) -->
+        <div class="flex-grow flex flex-col items-center justify-center">
+            <div class="mascot bg-green-300 transform hover:scale-105 transition-transform" id="mascot-success">
+                <!-- 戴墨镜表情 -->
+                <span>😎</span>
+            </div>
+
+            <!-- 反馈文案卡片 -->
+            <div class="card-brutal mt-10 p-6 w-full text-center bg-white">
+                <div class="text-4xl mb-3">💰</div>
+                <h3 class="text-xl font-black text-slate-800 mb-2">底气十足！</h3>
+                <p class="text-sm font-semibold text-slate-600 leading-relaxed">
+                    麦克风测试完美。您刚才发出的音量足以让整个华尔街听从您的指挥。<br>
+                    <span class="text-amber-500 font-bold mt-2 block">今日能量值：98/100</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="pb-6">
+            <button onclick="resetApp()" class="btn-brutal w-full py-4 text-xl bg-black text-white shadow-[4px_4px_0px_0px_#a5b4fc]">
+                🚀 开始赚钱 (关闭)
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ----------------------------------------------------------------------
+    // 1. 时钟逻辑 (极简工具属性保障)
+    // ----------------------------------------------------------------------
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const dateStr = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
+
+        document.getElementById('clock-display').innerText = timeStr;
+        document.getElementById('date-display').innerText = dateStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ----------------------------------------------------------------------
+    // 2. 视图切换与状态管理
+    // ----------------------------------------------------------------------
+    const views = {
+        idle: document.getElementById('view-idle'),
+        ringing: document.getElementById('view-ringing'),
+        success: document.getElementById('view-success')
+    };
+
+    function switchView(viewName) {
+        Object.values(views).forEach(v => v.classList.remove('view-active'));
+        views[viewName].classList.add('view-active');
+
+        // 切换背景色配合氛围
+        const app = document.getElementById('app');
+        if(app.classList.contains('theme-dark')) return; // 暗黑模式下不改背景
+
+        if(viewName === 'idle') app.style.backgroundColor = '#fdf2f8'; // 粉
+        else if(viewName === 'ringing') app.style.backgroundColor = '#fee2e2'; // 红
+        else if(viewName === 'success') app.style.backgroundColor = '#dcfce3'; // 绿
+    }
+
+    function triggerAlarm() {
+        switchView('ringing');
+        // 重置语音状态
+        document.getElementById('speech-status').innerText = "";
+        document.getElementById('btn-speak').innerText = "🎤 点击 说话";
+        document.getElementById('btn-speak').classList.remove('bg-gray-300');
+        document.getElementById('btn-speak').classList.add('bg-blue-300');
+    }
+
+    function forceSuccess() {
+        switchView('success');
+    }
+
+    function resetApp() {
+        switchView('idle');
+    }
+
+    // ----------------------------------------------------------------------
+    // 3. Web Speech API (真实的语音识别)
+    // ----------------------------------------------------------------------
+    let recognition = null;
+
+    // 初始化语音识别 (做兼容性处理)
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US'; // 设定识别英语以匹配台词
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = function() {
+            const btn = document.getElementById('btn-speak');
+            btn.innerHTML = '<span class="animate-pulse">🔴</span> 正在聆听...';
+            btn.classList.replace('bg-blue-300', 'bg-gray-200');
+            document.getElementById('speech-status').innerText = "请大声说出台词！";
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            console.log("识别结果: ", transcript);
+
+            // 容错匹配逻辑：只要包含关键数字即可
+            if (transcript.includes("one") || transcript.includes("two") || transcript.includes("million")) {
+                document.getElementById('speech-status').innerText = "✅ 识别成功！";
+                setTimeout(() => forceSuccess(), 500); // 延迟跳转增强体验
+            } else {
+                document.getElementById('speech-status').innerText = `听到了: "${transcript}"，不对哦，重来！`;
+                const btn = document.getElementById('btn-speak');
+                btn.innerHTML = '🎤 重试';
+                btn.classList.replace('bg-gray-200', 'bg-red-300');
+            }
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById('speech-status').innerText = "麦克风错误: " + event.error;
+            const btn = document.getElementById('btn-speak');
+            btn.innerHTML = '🎤 重新点击';
+            btn.classList.replace('bg-gray-200', 'bg-blue-300');
+        };
+
+        recognition.onend = function() {
+            // 如果没跳到成功页，恢复按钮状态
+            if(!views.success.classList.contains('view-active') && document.getElementById('btn-speak').innerText.includes('聆听')) {
+                const btn = document.getElementById('btn-speak');
+                btn.innerHTML = '🎤 点击 说话';
+                btn.classList.replace('bg-gray-200', 'bg-blue-300');
+            }
+        }
+    }
+
+    function startListening() {
+        if (recognition) {
+            try {
+                recognition.start();
+            } catch(e) {
+                // 防止重复启动报错
+                console.log(e);
+            }
+        } else {
+            alert("抱歉，您的浏览器不支持网页语音识别。请点击下方的跳过按钮体验流程。");
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 4. 暗黑模式切换 (彩蛋：满足喜欢暴躁/暗黑设定的用户)
+    // ----------------------------------------------------------------------
+    let isDark = false;
+    function toggleTheme() {
+        const app = document.getElementById('app');
+        isDark = !isDark;
+
+        if(isDark) {
+            app.classList.add('theme-dark');
+            // 改变精灵表情为暗黑风
+            document.getElementById('mascot-idle').innerHTML = '<span style="transform: translateY(-5px); color: #fff;">≖_≖</span>';
+            document.getElementById('mascot-ringing').innerHTML = '<span style="color: #fff;">◣_◢</span>';
+            document.getElementById('mascot-success').innerHTML = '<span>🧛</span>';
+            document.getElementById('mascot-ringing').classList.replace('bg-yellow-300', 'bg-red-500');
+        } else {
+            app.classList.remove('theme-dark');
+            // 恢复可爱风
+            document.getElementById('mascot-idle').innerHTML = '<span style="transform: translateY(-5px);">- ⩊ -</span>';
+            document.getElementById('mascot-ringing').innerHTML = '<span>O ▱ O</span>';
+            document.getElementById('mascot-success').innerHTML = '<span>😎</span>';
+            document.getElementById('mascot-ringing').classList.replace('bg-red-500', 'bg-yellow-300');
+
+            // 恢复背景色
+            if(views.idle.classList.contains('view-active')) app.style.backgroundColor = '#fdf2f8';
+            if(views.ringing.classList.contains('view-active')) app.style.backgroundColor = '#fee2e2';
+            if(views.success.classList.contains('view-active')) app.style.backgroundColor = '#dcfce3';
+        }
+    }
+</script>
+</body>
+</html>
