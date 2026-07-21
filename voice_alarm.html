@@ -3,392 +3,1858 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Voice Alarm - 觉醒剧场</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入一款带有几何感和可爱属性的无衬线字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#ff7f6e">
+    <title>Funny Alarm - 今天会怎样开始？</title>
     <style>
+        :root {
+            --ink: #151515;
+            --paper: #fffdf8;
+            --shell: #fff1f4;
+            --accent: #ff7f6e;
+            --accent-soft: #ffd9d2;
+            --accent-two: #6ecdf2;
+            --mint: #9fe3c2;
+            --yellow: #ffe46b;
+            --muted: #656565;
+            --shadow: 5px 5px 0 var(--ink);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
         body {
-            font-family: 'Space Grotesk', system-ui, sans-serif;
-            background-color: #f3f4f6; /* 外围底色 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            min-height: 100%;
         }
 
-        /* 核心 Neo-Brutalism (粗野可爱风) 样式字典 */
-        .app-container {
-            width: 100%;
-            max-width: 390px; /* 模拟 iPhone 宽度 */
-            height: 100vh;
-            max-height: 844px;
-            background-color: #fdf2f8; /* 默认马卡龙粉 */
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background: #eef4f5;
+            color: var(--ink);
+            font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+            letter-spacing: 0;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            color: inherit;
+        }
+
+        .app {
             position: relative;
+            width: min(100%, 410px);
+            height: 100vh;
+            max-height: 860px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.5s ease;
+            background: var(--shell);
+            transition: background-color 240ms ease;
         }
 
-        @media (min-width: 400px) {
-            .app-container {
-                height: 90vh;
-                border-radius: 40px;
-                border: 8px solid #000;
-                box-shadow: 12px 12px 0px 0px #000; /* 标志性的硬阴影 */
+        .view {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            padding: 22px 20px 20px;
+            overflow: hidden;
+        }
+
+        .view.is-active {
+            display: flex;
+            animation: enter 260ms ease-out;
+        }
+
+        @keyframes enter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* 粗边框胶囊按钮 */
-        .btn-brutal {
-            background-color: #fff;
-            border: 4px solid #000;
-            border-radius: 9999px; /* 极致圆角 */
-            color: #000;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 4px 4px 0px 0px #000;
-            transition: all 0.1s ease;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .btn-brutal:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0px 0px 0px 0px #000;
-        }
-
-        /* 粗边框卡片 */
-        .card-brutal {
-            background-color: #fff;
-            border: 4px solid #000;
-            border-radius: 32px;
-            box-shadow: 6px 6px 0px 0px #000;
-        }
-
-        /* 拟人化状态精灵 */
-        .mascot {
-            width: 140px;
-            height: 120px;
-            background-color: #bfdbfe; /* 默认婴儿蓝 */
-            border: 6px solid #000;
-            border-radius: 60px 50px 70px 40px; /* 不规则的可爱形状 */
-            position: relative;
-            margin: 0 auto;
+        .topbar {
+            min-height: 46px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 3rem;
-            box-shadow: inset -8px -8px 0px rgba(0,0,0,0.1), 6px 6px 0px 0px #000;
-            transition: all 0.3s ease;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 2;
         }
 
-        /* 动画效果 */
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-2deg); }
-            20% { transform: translate(-3px, 0px) rotate(2deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(2deg); }
-            50% { transform: translate(-1px, 2px) rotate(-2deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-2deg); }
-            80% { transform: translate(-1px, -1px) rotate(2deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-2deg); }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
         }
-        .animate-shake { animation: shake 0.5s infinite; }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--yellow);
+            box-shadow: 2px 2px 0 var(--ink);
+            font-size: 17px;
+        }
+
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--paper);
+            box-shadow: 3px 3px 0 var(--ink);
+            cursor: pointer;
+            font-size: 19px;
+            transition: transform 90ms ease, box-shadow 90ms ease;
+        }
+
+        .icon-button:active,
+        .button:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0 0 0 var(--ink);
+        }
+
+        .clock-block {
+            margin-top: 18px;
+            text-align: center;
+        }
+
+        .eyebrow {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .clock {
+            margin-top: 2px;
+            font-size: clamp(62px, 18vw, 78px);
+            font-weight: 900;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .date {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .idle-center {
+            min-height: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        .mascot-wrap {
+            position: relative;
+            width: 174px;
+            height: 144px;
+            display: grid;
+            place-items: center;
+        }
+
+        .spark {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--yellow);
+            font-weight: 900;
+            animation: bob 2.8s ease-in-out infinite;
+        }
+
+        .spark.one {
+            top: 6px;
+            left: 2px;
+        }
+
+        .spark.two {
+            right: 0;
+            bottom: 12px;
+            background: var(--mint);
+            animation-delay: 600ms;
+        }
+
+        @keyframes bob {
+            0%,
+            100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+            50% {
+                transform: translateY(-7px) rotate(5deg);
+            }
+        }
+
+        .mascot {
+            width: 142px;
+            height: 118px;
+            display: grid;
+            place-items: center;
+            position: relative;
+            border: 5px solid var(--ink);
+            border-radius: 58% 48% 55% 45%;
+            background: var(--accent-two);
+            box-shadow: inset -8px -8px 0 rgba(0, 0, 0, 0.08), 6px 6px 0 var(--ink);
+            font-size: 39px;
+            font-weight: 900;
+            transition: transform 180ms ease, background-color 240ms ease;
+        }
+
+        .mascot::before,
+        .mascot::after {
+            content: "";
+            position: absolute;
+            top: -22px;
+            width: 38px;
+            height: 28px;
+            border: 5px solid var(--ink);
+            border-radius: 50% 50% 35% 35%;
+            background: var(--accent);
+        }
+
+        .mascot::before {
+            left: 15px;
+            transform: rotate(-18deg);
+        }
+
+        .mascot::after {
+            right: 15px;
+            transform: rotate(18deg);
+        }
+
+        .mascot.is-sleeping {
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        .mascot.is-ringing {
+            animation: shake 420ms linear infinite;
+            background: var(--yellow);
+        }
+
+        .mascot.is-happy {
+            background: var(--mint);
+            transform: rotate(-3deg) scale(1.04);
+        }
 
         @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.045);
+            }
         }
-        .animate-breathe { animation: breathe 3s infinite ease-in-out; }
 
-        /* 视图切换逻辑 */
-        .view-section {
-            display: none;
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0);
+            }
+            25% {
+                transform: translate(-3px, 1px) rotate(-2deg);
+            }
+            50% {
+                transform: translate(3px, -1px) rotate(2deg);
+            }
+            75% {
+                transform: translate(-2px, -1px) rotate(1deg);
+            }
+        }
+
+        .tagline {
+            max-width: 290px;
+            margin: 18px 0 0;
+            text-align: center;
+            font-size: 19px;
+            font-weight: 900;
+            line-height: 1.25;
+        }
+
+        .tagline span {
+            display: inline;
+            padding: 1px 5px 2px;
+            background: var(--yellow);
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+
+        .bottom-stack {
+            display: grid;
+            gap: 12px;
+        }
+
+        .next-alarm {
+            min-height: 82px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            border: 4px solid var(--ink);
+            border-radius: 22px;
+            background: var(--paper);
+            box-shadow: var(--shadow);
+        }
+
+        .alarm-dot {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--accent-soft);
+            font-size: 20px;
+        }
+
+        .alarm-copy strong {
+            display: block;
+            font-size: 24px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .alarm-copy span {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .tiny-button {
+            min-width: 52px;
+            min-height: 34px;
+            padding: 0 10px;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: var(--mint);
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .button {
+            min-height: 56px;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            border: 4px solid var(--ink);
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: var(--shadow);
+            color: var(--ink);
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 900;
+            transition: transform 90ms ease, box-shadow 90ms ease;
+        }
+
+        .button.secondary {
+            background: var(--paper);
+        }
+
+        .button.blue {
+            background: var(--accent-two);
+        }
+
+        .button.mint {
+            background: var(--mint);
+        }
+
+        .button.small {
+            min-height: 46px;
+            border-width: 3px;
+            box-shadow: 3px 3px 0 var(--ink);
+            font-size: 14px;
+        }
+
+        .ringing-view {
+            background: var(--shell);
+        }
+
+        .ringing-heading {
+            margin: 12px 0 0;
+            text-align: center;
+        }
+
+        .ringing-heading h1 {
+            margin: 5px 0 0;
+            font-size: 26px;
+            line-height: 1.08;
+        }
+
+        .scene-stage {
+            min-height: 0;
+            flex: 1;
+            display: flex;
             flex-direction: column;
-            height: 100%;
-            padding: 2rem 1.5rem;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: inherit;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
         }
-        .view-active { display: flex; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 暗黑模式主题覆盖 */
-        .theme-dark { background-color: #1e1b4b !important; }
-        .theme-dark .text-slate-800 { color: #fff !important; }
-        .theme-dark .text-slate-500 { color: #a5b4fc !important; }
-        .theme-dark .card-brutal { background-color: #312e81; color: white; border-color: #a5b4fc; box-shadow: 6px 6px 0px 0px #a5b4fc;}
-        .theme-dark .btn-brutal { background-color: #c084fc; border-color: #fff; box-shadow: 4px 4px 0px 0px #fff; }
-        .theme-dark .mascot { background-color: #000; border-color: #a5b4fc; box-shadow: inset -8px -8px 0px rgba(255,255,255,0.2), 6px 6px 0px 0px #a5b4fc;}
+        .scene-icon {
+            position: absolute;
+            top: -7px;
+            right: 0;
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border: 4px solid var(--ink);
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 3px 3px 0 var(--ink);
+            font-size: 25px;
+            z-index: 2;
+        }
+
+        .challenge-card {
+            width: 100%;
+            margin-top: 14px;
+            padding: 18px;
+            border: 4px solid var(--ink);
+            border-radius: 24px;
+            background: var(--paper);
+            box-shadow: var(--shadow);
+        }
+
+        .challenge-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 0 10px;
+            border: 2px solid var(--ink);
+            border-radius: 999px;
+            background: var(--yellow);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .sound-button {
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            font-size: 21px;
+        }
+
+        .challenge-card h2 {
+            margin: 13px 0 5px;
+            font-size: 21px;
+            line-height: 1.1;
+        }
+
+        .challenge-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .challenge-area {
+            width: 100%;
+            min-height: 146px;
+            margin-top: 14px;
+        }
+
+        .challenge-panel {
+            display: none;
+        }
+
+        .challenge-panel.is-active {
+            display: block;
+        }
+
+        .camera-box {
+            position: relative;
+            width: 100%;
+            height: 146px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            border: 3px solid var(--ink);
+            border-radius: 18px;
+            background: #dff4fb;
+        }
+
+        .camera-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            text-align: center;
+            background: #dff4fb;
+            font-size: 13px;
+            font-weight: 900;
+            line-height: 1.4;
+        }
+
+        .camera-placeholder.is-hidden {
+            display: none;
+        }
+
+        .pose-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .hold-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hold-button::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: var(--hold-progress, 0%);
+            background: rgba(255, 255, 255, 0.55);
+            transition: width 50ms linear;
+        }
+
+        .hold-button span {
+            position: relative;
+        }
+
+        .speech-box {
+            min-height: 146px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            border: 3px solid var(--ink);
+            border-radius: 18px;
+            background: #e6f8ef;
+            text-align: center;
+        }
+
+        .quote {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 900;
+            line-height: 1.25;
+        }
+
+        .status {
+            min-height: 20px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .game-box {
+            min-height: 146px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 14px;
+            border: 3px solid var(--ink);
+            border-radius: 18px;
+            background: #fff5c2;
+        }
+
+        .sequence {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sequence-dot,
+        .game-pad {
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+        }
+
+        .sequence-dot {
+            width: 18px;
+            height: 18px;
+        }
+
+        .sequence-dot.is-done {
+            opacity: 0.3;
+            transform: scale(0.82);
+        }
+
+        .game-pads {
+            display: grid;
+            grid-template-columns: repeat(4, 48px);
+            gap: 8px;
+        }
+
+        .game-pad {
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+
+        .tone-0 {
+            background: #ff7f6e;
+        }
+
+        .tone-1 {
+            background: #6ecdf2;
+        }
+
+        .tone-2 {
+            background: #ffe46b;
+        }
+
+        .tone-3 {
+            background: #9fe3c2;
+        }
+
+        .swap-button {
+            min-height: 32px;
+            margin: 10px auto 0;
+            display: block;
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .success-view {
+            background: #dff8eb;
+        }
+
+        .success-center {
+            min-height: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .success-card {
+            width: 100%;
+            margin-top: 28px;
+            padding: 22px;
+            border: 4px solid var(--ink);
+            border-radius: 24px;
+            background: var(--paper);
+            box-shadow: var(--shadow);
+        }
+
+        .success-card h1 {
+            margin: 7px 0;
+            font-size: 25px;
+        }
+
+        .success-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        dialog {
+            width: min(calc(100% - 28px), 380px);
+            max-height: min(760px, calc(100vh - 28px));
+            padding: 0;
+            overflow: hidden;
+            border: 4px solid var(--ink);
+            border-radius: 26px;
+            background: var(--paper);
+            box-shadow: 8px 8px 0 var(--ink);
+            color: var(--ink);
+        }
+
+        dialog::backdrop {
+            background: rgba(21, 21, 21, 0.44);
+        }
+
+        .settings {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: inherit;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .close-button {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--accent-soft);
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .field {
+            margin-top: 20px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .time-input {
+            width: 100%;
+            height: 64px;
+            padding: 0 16px;
+            border: 4px solid var(--ink);
+            border-radius: 16px;
+            background: #fff5c2;
+            font-size: 31px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day-button {
+            aspect-ratio: 1;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--paper);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .day-button.is-selected {
+            background: var(--accent-two);
+        }
+
+        .segmented {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 4px;
+            border: 3px solid var(--ink);
+            border-radius: 15px;
+            background: #ececec;
+        }
+
+        .segment {
+            min-height: 42px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .segment.is-selected {
+            background: var(--paper);
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+
+        .file-row {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .file-row.is-visible {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-label {
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 13px;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: var(--mint);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .file-name {
+            min-width: 0;
+            overflow: hidden;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+        }
+
+        .range-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        .settings-note {
+            margin: 14px 0 0;
+            padding: 11px 12px;
+            border: 2px solid var(--ink);
+            border-radius: 12px;
+            background: #e6f8ef;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            bottom: 26px;
+            z-index: 10;
+            max-width: calc(100% - 40px);
+            padding: 10px 14px;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, 12px);
+            transition: opacity 180ms ease, transform 180ms ease;
+            white-space: nowrap;
+        }
+
+        .toast.is-visible {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .shake-once {
+            animation: shake 280ms linear 2;
+        }
+
+        @media (min-width: 460px) {
+            .app {
+                height: min(92vh, 860px);
+                border: 7px solid var(--ink);
+                border-radius: 38px;
+                box-shadow: 12px 12px 0 var(--ink);
+            }
+        }
+
+        @media (max-height: 720px) {
+            .view {
+                padding-top: 14px;
+            }
+
+            .clock-block {
+                margin-top: 6px;
+            }
+
+            .clock {
+                font-size: 56px;
+            }
+
+            .mascot-wrap {
+                transform: scale(0.86);
+                margin: -8px 0;
+            }
+
+            .tagline {
+                margin-top: 8px;
+                font-size: 17px;
+            }
+
+            .next-alarm {
+                min-height: 70px;
+                padding-block: 9px;
+            }
+
+            .scene-stage {
+                padding-block: 4px;
+            }
+
+            .challenge-card {
+                margin-top: 8px;
+                padding: 14px;
+            }
+
+            .challenge-area {
+                min-height: 124px;
+                margin-top: 9px;
+            }
+
+            .camera-box,
+            .speech-box,
+            .game-box {
+                min-height: 124px;
+                height: 124px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 1ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 1ms !important;
+            }
+        }
     </style>
 </head>
 <body>
-
-<div id="app" class="app-container">
-
-    <!-- 顶部状态栏区域 (辅助功能) -->
-    <div class="absolute top-6 right-6 z-50">
-        <button onclick="toggleTheme()" class="w-10 h-10 rounded-full border-2 border-black bg-white flex items-center justify-center text-xl shadow-[2px_2px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all">
-            🎭
-        </button>
-    </div>
-
-    <!-- 视图 1：极简时钟首页 (Idle) -->
-    <div id="view-idle" class="view-section view-active justify-between">
-        <!-- 时钟主体：绝对的焦点 -->
-        <div class="mt-12 text-center">
-            <h2 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Current Time</h2>
-            <div id="clock-display" class="text-7xl font-bold text-slate-800 tracking-tighter tabular-nums">00:00</div>
-            <div id="date-display" class="text-lg font-semibold text-slate-500 mt-2">--</div>
-        </div>
-
-        <!-- 状态精灵 (安静睡觉) -->
-        <div class="flex-grow flex flex-col items-center justify-center relative">
-            <div class="text-xl font-bold text-slate-400 absolute top-0 animate-bounce">z Z z</div>
-            <div class="mascot animate-breathe" id="mascot-idle">
-                <!-- 闭眼表情 -->
-                <span style="transform: translateY(-5px);">- ⩊ -</span>
-            </div>
-            <div class="mt-8 text-center px-4 py-2 card-brutal inline-block">
-                <span class="font-bold text-sm text-slate-800">⏳ 闹钟设于 07:30 AM</span>
-            </div>
-        </div>
-
-        <!-- 底部操作：仅保留最核心按钮 -->
-        <div class="pb-6">
-            <button onclick="triggerAlarm()" class="btn-brutal w-full py-4 text-xl flex justify-center items-center gap-2 bg-yellow-200">
-                🔔 模拟闹钟响铃
-            </button>
-        </div>
-    </div>
-
-    <!-- 视图 2：响铃与语音交互 (Ringing & Listening) -->
-    <div id="view-ringing" class="view-section justify-between bg-red-100">
-        <div class="mt-8 text-center">
-            <h2 class="text-2xl font-bold text-slate-800 animate-pulse">WAKE UP!</h2>
-            <p class="text-slate-600 font-semibold mt-1">你的专车已在楼下</p>
-        </div>
-
-        <!-- 状态精灵 (震惊/震动) -->
-        <div class="flex-grow flex flex-col items-center justify-center">
-            <div class="mascot animate-shake bg-yellow-300" id="mascot-ringing">
-                <!-- 震惊表情 -->
-                <span>O ▱ O</span>
-            </div>
-
-            <!-- 剧本台词卡片 -->
-            <div class="card-brutal mt-10 p-6 w-full relative bg-white">
-                <div class="absolute -top-4 left-6 bg-black text-white px-3 py-1 rounded-full text-xs font-bold border-2 border-white">
-                    今日剧本：财政大臣
+    <main id="app" class="app">
+        <section id="view-idle" class="view is-active" aria-label="闹钟首页">
+            <header class="topbar">
+                <div class="brand">
+                    <span class="brand-mark" aria-hidden="true">⏰</span>
+                    <span>Funny Alarm</span>
                 </div>
-                <p class="text-sm font-semibold text-slate-500 mb-2">清理嗓子，大声念出：</p>
-                <p class="text-2xl font-black text-slate-800 tracking-tight leading-none">
-                    "One million,<br>two million..."
-                </p>
-            </div>
-        </div>
+                <button id="open-settings" class="icon-button" type="button" aria-label="设置闹钟" title="设置闹钟">⚙</button>
+            </header>
 
-        <!-- 语音录入交互区 -->
-        <div class="pb-6 space-y-3">
-            <div id="speech-status" class="text-center text-sm font-bold text-slate-500 h-6"></div>
-            <button id="btn-speak" onclick="startListening()" class="btn-brutal w-full py-4 text-xl bg-blue-300 flex justify-center items-center gap-2">
-                🎤 按住/点击 说话
-            </button>
-            <button onclick="forceSuccess()" class="w-full py-2 text-xs font-bold text-slate-400 underline underline-offset-4 decoration-2 hover:text-slate-600">
-                (设备不支持？点击直接跳过)
-            </button>
-        </div>
-    </div>
-
-    <!-- 视图 3：成功与状态反馈 (Feedback) -->
-    <div id="view-success" class="view-section justify-between bg-green-100">
-        <div class="mt-8 text-center">
-            <h2 class="text-xl font-bold text-slate-500 uppercase">State Switched</h2>
-        </div>
-
-        <!-- 状态精灵 (戴墨镜/得意) -->
-        <div class="flex-grow flex flex-col items-center justify-center">
-            <div class="mascot bg-green-300 transform hover:scale-105 transition-transform" id="mascot-success">
-                <!-- 戴墨镜表情 -->
-                <span>😎</span>
+            <div class="clock-block">
+                <p class="eyebrow">现在时间</p>
+                <div id="clock-display" class="clock">00:00</div>
+                <div id="date-display" class="date">--</div>
             </div>
 
-            <!-- 反馈文案卡片 -->
-            <div class="card-brutal mt-10 p-6 w-full text-center bg-white">
-                <div class="text-4xl mb-3">💰</div>
-                <h3 class="text-xl font-black text-slate-800 mb-2">底气十足！</h3>
-                <p class="text-sm font-semibold text-slate-600 leading-relaxed">
-                    麦克风测试完美。您刚才发出的音量足以让整个华尔街听从您的指挥。<br>
-                    <span class="text-amber-500 font-bold mt-2 block">今日能量值：98/100</span>
-                </p>
+            <div class="idle-center">
+                <div class="mascot-wrap" aria-hidden="true">
+                    <span class="spark one">?</span>
+                    <div class="mascot is-sleeping">－ᴗ－</div>
+                    <span class="spark two">♪</span>
+                </div>
+                <p class="tagline"><span>你永远不知道，今天会怎样开始。</span></p>
             </div>
-        </div>
 
-        <div class="pb-6">
-            <button onclick="resetApp()" class="btn-brutal w-full py-4 text-xl bg-black text-white shadow-[4px_4px_0px_0px_#a5b4fc]">
-                🚀 开始赚钱 (关闭)
+            <div class="bottom-stack">
+                <div class="next-alarm">
+                    <span class="alarm-dot" aria-hidden="true">🔔</span>
+                    <div class="alarm-copy">
+                        <strong id="next-alarm-time">07:30</strong>
+                        <span id="next-alarm-days">周一至周五 · 每日惊喜</span>
+                    </div>
+                    <button id="edit-alarm" class="tiny-button" type="button">编辑</button>
+                </div>
+                <button id="preview-alarm" class="button" type="button">
+                    <span aria-hidden="true">✦</span>
+                    <span>预览今日随机开场</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="view-ringing" class="view ringing-view" aria-label="随机开场挑战">
+            <header class="topbar">
+                <div class="brand">
+                    <span class="brand-mark" aria-hidden="true">⏰</span>
+                    <span id="scene-name-top">今日随机开场</span>
+                </div>
+                <button id="sound-toggle" class="icon-button" type="button" aria-label="暂停铃声" title="暂停铃声">🔊</button>
+            </header>
+
+            <div class="ringing-heading">
+                <p class="eyebrow">今天，从这里开始</p>
+                <h1 id="scene-title">惊喜正在揭晓</h1>
+            </div>
+
+            <div class="scene-stage">
+                <div class="mascot-wrap" aria-hidden="true">
+                    <div class="mascot is-ringing">◉▽◉</div>
+                    <div id="scene-icon" class="scene-icon">✦</div>
+                </div>
+
+                <div class="challenge-card">
+                    <div class="challenge-meta">
+                        <span id="challenge-type" class="pill">随机玩法</span>
+                        <span id="sound-label" class="eyebrow">随机铃声</span>
+                    </div>
+                    <h2 id="challenge-title">准备好了吗？</h2>
+                    <p id="challenge-prompt">完成今天的互动，铃声就会停止。</p>
+
+                    <div class="challenge-area">
+                        <div id="pose-panel" class="challenge-panel">
+                            <div class="camera-box">
+                                <video id="camera-preview" autoplay playsinline muted></video>
+                                <div id="camera-placeholder" class="camera-placeholder">允许使用前置摄像头，看看今天的搞怪姿势。</div>
+                            </div>
+                            <div class="pose-actions">
+                                <button id="camera-button" class="button small secondary" type="button">开启自拍</button>
+                                <button id="pose-hold-button" class="button small mint hold-button" type="button">
+                                    <span>摆好后按住</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="voice-panel" class="challenge-panel">
+                            <div class="speech-box">
+                                <p id="speech-quote" class="quote">“今天也要有点好玩！”</p>
+                                <button id="speech-button" class="button small blue" type="button">🎤 开始说话</button>
+                                <div id="speech-status" class="status" aria-live="polite"></div>
+                            </div>
+                        </div>
+
+                        <div id="game-panel" class="challenge-panel">
+                            <div id="game-box" class="game-box">
+                                <div id="game-sequence" class="sequence" aria-label="目标颜色顺序"></div>
+                                <div class="game-pads" aria-label="按颜色顺序点击">
+                                    <button class="game-pad tone-0" data-tone="0" type="button" aria-label="珊瑚色"></button>
+                                    <button class="game-pad tone-1" data-tone="1" type="button" aria-label="蓝色"></button>
+                                    <button class="game-pad tone-2" data-tone="2" type="button" aria-label="黄色"></button>
+                                    <button class="game-pad tone-3" data-tone="3" type="button" aria-label="绿色"></button>
+                                </div>
+                                <div id="game-status" class="status" aria-live="polite">照着上面的颜色顺序点击</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="swap-challenge" class="swap-button" type="button">设备或识别遇到问题？换一个随机玩法</button>
+        </section>
+
+        <section id="view-success" class="view success-view" aria-label="今日开场完成">
+            <header class="topbar">
+                <div class="brand">
+                    <span class="brand-mark" aria-hidden="true">✓</span>
+                    <span>今日开场完成</span>
+                </div>
+            </header>
+
+            <div class="success-center">
+                <div class="mascot-wrap" aria-hidden="true">
+                    <span class="spark one">★</span>
+                    <div class="mascot is-happy">⌐■ᴗ■</div>
+                    <span class="spark two">!</span>
+                </div>
+                <div class="success-card">
+                    <span id="success-scene" class="pill">今日随机开场</span>
+                    <h1 id="success-title">今天开启成功！</h1>
+                    <p id="success-message">这是一个不错的开始。</p>
+                </div>
+            </div>
+
+            <button id="finish-button" class="button mint" type="button">
+                <span aria-hidden="true">☀</span>
+                <span>开启今天</span>
             </button>
-        </div>
-    </div>
+        </section>
 
-</div>
+        <dialog id="settings-dialog">
+            <form id="settings-form" class="settings" method="dialog">
+                <div class="settings-header">
+                    <h2>明天几点开始？</h2>
+                    <button id="close-settings" class="close-button" type="button" aria-label="关闭设置">×</button>
+                </div>
 
-<script>
-    // ----------------------------------------------------------------------
-    // 1. 时钟逻辑 (极简工具属性保障)
-    // ----------------------------------------------------------------------
-    function updateClock() {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        const dateStr = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
+                <div class="field">
+                    <label class="field-label" for="alarm-time-input">闹钟时间</label>
+                    <input id="alarm-time-input" class="time-input" type="time" value="07:30" required>
+                </div>
 
-        document.getElementById('clock-display').innerText = timeStr;
-        document.getElementById('date-display').innerText = dateStr;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+                <div class="field">
+                    <span class="field-label">重复日期</span>
+                    <div class="weekdays" aria-label="重复日期">
+                        <button class="day-button" data-day="1" type="button">一</button>
+                        <button class="day-button" data-day="2" type="button">二</button>
+                        <button class="day-button" data-day="3" type="button">三</button>
+                        <button class="day-button" data-day="4" type="button">四</button>
+                        <button class="day-button" data-day="5" type="button">五</button>
+                        <button class="day-button" data-day="6" type="button">六</button>
+                        <button class="day-button" data-day="0" type="button">日</button>
+                    </div>
+                </div>
 
-    // ----------------------------------------------------------------------
-    // 2. 视图切换与状态管理
-    // ----------------------------------------------------------------------
-    const views = {
-        idle: document.getElementById('view-idle'),
-        ringing: document.getElementById('view-ringing'),
-        success: document.getElementById('view-success')
-    };
+                <div class="field">
+                    <span class="field-label">响铃方式</span>
+                    <div class="segmented" role="group" aria-label="响铃方式">
+                        <button class="segment is-selected" data-sound-mode="random" type="button">每日随机</button>
+                        <button class="segment" data-sound-mode="custom" type="button">我的铃声</button>
+                    </div>
+                    <div id="custom-file-row" class="file-row">
+                        <label class="file-label" for="custom-sound-input">选择音频</label>
+                        <input id="custom-sound-input" type="file" accept="audio/*">
+                        <span id="custom-file-name" class="file-name">尚未选择</span>
+                    </div>
+                </div>
 
-    function switchView(viewName) {
-        Object.values(views).forEach(v => v.classList.remove('view-active'));
-        views[viewName].classList.add('view-active');
+                <div class="field">
+                    <label class="field-label" for="volume-input">响铃音量</label>
+                    <div class="range-row">
+                        <span aria-hidden="true">🔈</span>
+                        <input id="volume-input" type="range" min="10" max="100" value="72">
+                        <span aria-hidden="true">🔊</span>
+                    </div>
+                </div>
 
-        // 切换背景色配合氛围
-        const app = document.getElementById('app');
-        if(app.classList.contains('theme-dark')) return; // 暗黑模式下不改背景
+                <p class="settings-note">场景和挑战始终由 Funny Alarm 随机发放。摄像头或麦克风不可用时，会自动提供备用小游戏。</p>
 
-        if(viewName === 'idle') app.style.backgroundColor = '#fdf2f8'; // 粉
-        else if(viewName === 'ringing') app.style.backgroundColor = '#fee2e2'; // 红
-        else if(viewName === 'success') app.style.backgroundColor = '#dcfce3'; // 绿
-    }
+                <div class="field">
+                    <button class="button" type="submit">保存闹钟</button>
+                </div>
+            </form>
+        </dialog>
 
-    function triggerAlarm() {
-        switchView('ringing');
-        // 重置语音状态
-        document.getElementById('speech-status').innerText = "";
-        document.getElementById('btn-speak').innerText = "🎤 点击 说话";
-        document.getElementById('btn-speak').classList.remove('bg-gray-300');
-        document.getElementById('btn-speak').classList.add('bg-blue-300');
-    }
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </main>
 
-    function forceSuccess() {
-        switchView('success');
-    }
+    <script>
+        (function () {
+            "use strict";
 
-    function resetApp() {
-        switchView('idle');
-    }
+            var scenePacks = [
+                {
+                    id: "photo-booth",
+                    category: "pose",
+                    scene: "搞怪照相馆",
+                    icon: "📸",
+                    title: "拍下今天第一张怪表情",
+                    prompt: "双手托住脸，做一个夸张又可爱的早安表情。",
+                    feedback: "今日镜头感满分，连太阳都被你逗醒了。",
+                    sound: "快门波波铃",
+                    shell: "#fff0f2",
+                    accent: "#ff7f6e",
+                    accentTwo: "#6ecdf2",
+                    melody: [659, 784, 988, 784]
+                },
+                {
+                    id: "cloud-stretch",
+                    category: "pose",
+                    scene: "云朵伸展台",
+                    icon: "☁️",
+                    title: "伸一个很大的懒腰",
+                    prompt: "把双手举过头顶，像一朵刚刚展开的云。",
+                    feedback: "舒展完成，今天的天空已经为你让出位置。",
+                    sound: "云朵叮咚铃",
+                    shell: "#eaf8fd",
+                    accent: "#6ecdf2",
+                    accentTwo: "#ffe46b",
+                    melody: [523, 659, 784, 1047]
+                },
+                {
+                    id: "breakfast-radio",
+                    category: "voice",
+                    scene: "早餐广播站",
+                    icon: "🎙️",
+                    title: "播报今天的开场白",
+                    prompt: "清清嗓子，把今天的第一句话说出来。",
+                    phrase: "今天也要有点好玩",
+                    language: "zh-CN",
+                    keywords: ["今天", "好玩"],
+                    feedback: "声音收到，今天的早间频道正式开播。",
+                    sound: "早安广播铃",
+                    shell: "#eef9f3",
+                    accent: "#9fe3c2",
+                    accentTwo: "#ff7f6e",
+                    melody: [392, 523, 659, 523]
+                },
+                {
+                    id: "space-morning",
+                    category: "voice",
+                    scene: "太空晨间站",
+                    icon: "🚀",
+                    title: "发送今日出发口令",
+                    prompt: "向地球报告，你已经准备好开启今天。",
+                    phrase: "早安地球，准备出发",
+                    language: "zh-CN",
+                    keywords: ["早安", "出发"],
+                    feedback: "口令确认，今日航线已经为你开启。",
+                    sound: "太空启动铃",
+                    shell: "#eef2ff",
+                    accent: "#a8b7ff",
+                    accentTwo: "#ffe46b",
+                    melody: [440, 554, 659, 880]
+                },
+                {
+                    id: "lucky-arcade",
+                    category: "game",
+                    scene: "幸运游戏厅",
+                    icon: "🕹️",
+                    title: "点亮今天的幸运顺序",
+                    prompt: "按照颜色提示完成四次点击。",
+                    feedback: "通关成功，今日幸运值正在加载。",
+                    sound: "游戏开机铃",
+                    shell: "#fff7d8",
+                    accent: "#ffe46b",
+                    accentTwo: "#ff7f6e",
+                    melody: [330, 440, 660, 880]
+                },
+                {
+                    id: "morning-beat",
+                    category: "game",
+                    scene: "清晨节拍社",
+                    icon: "🥁",
+                    title: "敲出今天的第一段节拍",
+                    prompt: "记住颜色顺序，再跟着节拍点击。",
+                    feedback: "节拍接上了，今天会有自己的好节奏。",
+                    sound: "彩色节拍铃",
+                    shell: "#f4edff",
+                    accent: "#d3a8ff",
+                    accentTwo: "#9fe3c2",
+                    melody: [262, 392, 523, 784]
+                }
+            ];
 
-    // ----------------------------------------------------------------------
-    // 3. Web Speech API (真实的语音识别)
-    // ----------------------------------------------------------------------
-    let recognition = null;
+            var views = {
+                idle: document.getElementById("view-idle"),
+                ringing: document.getElementById("view-ringing"),
+                success: document.getElementById("view-success")
+            };
 
-    // 初始化语音识别 (做兼容性处理)
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.lang = 'en-US'; // 设定识别英语以匹配台词
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
+            var app = document.getElementById("app");
+            var settingsDialog = document.getElementById("settings-dialog");
+            var alarmTimeInput = document.getElementById("alarm-time-input");
+            var volumeInput = document.getElementById("volume-input");
+            var soundToggle = document.getElementById("sound-toggle");
+            var toast = document.getElementById("toast");
+            var cameraStream = null;
+            var recognition = null;
+            var currentScene = null;
+            var audioContext = null;
+            var masterGain = null;
+            var toneTimer = null;
+            var customAudio = null;
+            var customAudioUrl = "";
+            var soundMuted = false;
+            var holdTimer = null;
+            var holdStartedAt = 0;
+            var gameSequence = [];
+            var gameIndex = 0;
+            var lastTriggeredMinute = "";
 
-        recognition.onstart = function() {
-            const btn = document.getElementById('btn-speak');
-            btn.innerHTML = '<span class="animate-pulse">🔴</span> 正在聆听...';
-            btn.classList.replace('bg-blue-300', 'bg-gray-200');
-            document.getElementById('speech-status').innerText = "请大声说出台词！";
-        };
+            var settings = loadSettings();
 
-        recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript.toLowerCase();
-            console.log("识别结果: ", transcript);
+            function loadSettings() {
+                var defaults = {
+                    time: "07:30",
+                    days: [1, 2, 3, 4, 5],
+                    soundMode: "random",
+                    volume: 72
+                };
 
-            // 容错匹配逻辑：只要包含关键数字即可
-            if (transcript.includes("one") || transcript.includes("two") || transcript.includes("million")) {
-                document.getElementById('speech-status').innerText = "✅ 识别成功！";
-                setTimeout(() => forceSuccess(), 500); // 延迟跳转增强体验
-            } else {
-                document.getElementById('speech-status').innerText = `听到了: "${transcript}"，不对哦，重来！`;
-                const btn = document.getElementById('btn-speak');
-                btn.innerHTML = '🎤 重试';
-                btn.classList.replace('bg-gray-200', 'bg-red-300');
+                try {
+                    var saved = JSON.parse(localStorage.getItem("funnyAlarmSettings"));
+                    if (!saved) {
+                        return defaults;
+                    }
+                    return {
+                        time: saved.time || defaults.time,
+                        days: Array.isArray(saved.days) && saved.days.length ? saved.days : defaults.days,
+                        soundMode: saved.soundMode === "custom" ? "custom" : "random",
+                        volume: Number(saved.volume) || defaults.volume
+                    };
+                } catch (error) {
+                    return defaults;
+                }
             }
-        };
 
-        recognition.onerror = function(event) {
-            document.getElementById('speech-status').innerText = "麦克风错误: " + event.error;
-            const btn = document.getElementById('btn-speak');
-            btn.innerHTML = '🎤 重新点击';
-            btn.classList.replace('bg-gray-200', 'bg-blue-300');
-        };
-
-        recognition.onend = function() {
-            // 如果没跳到成功页，恢复按钮状态
-            if(!views.success.classList.contains('view-active') && document.getElementById('btn-speak').innerText.includes('聆听')) {
-                const btn = document.getElementById('btn-speak');
-                btn.innerHTML = '🎤 点击 说话';
-                btn.classList.replace('bg-gray-200', 'bg-blue-300');
+            function saveSettings() {
+                localStorage.setItem("funnyAlarmSettings", JSON.stringify(settings));
             }
-        }
-    }
 
-    function startListening() {
-        if (recognition) {
-            try {
-                recognition.start();
-            } catch(e) {
-                // 防止重复启动报错
-                console.log(e);
+            function updateClock() {
+                var now = new Date();
+                var time = now.toLocaleTimeString("zh-CN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false
+                });
+                var date = now.toLocaleDateString("zh-CN", {
+                    month: "long",
+                    day: "numeric",
+                    weekday: "short"
+                });
+                document.getElementById("clock-display").textContent = time;
+                document.getElementById("date-display").textContent = date;
+                checkScheduledAlarm(now, time);
             }
-        } else {
-            alert("抱歉，您的浏览器不支持网页语音识别。请点击下方的跳过按钮体验流程。");
-        }
-    }
 
-    // ----------------------------------------------------------------------
-    // 4. 暗黑模式切换 (彩蛋：满足喜欢暴躁/暗黑设定的用户)
-    // ----------------------------------------------------------------------
-    let isDark = false;
-    function toggleTheme() {
-        const app = document.getElementById('app');
-        isDark = !isDark;
+            function checkScheduledAlarm(now, time) {
+                var key = now.toDateString() + "-" + time;
+                if (
+                    views.idle.classList.contains("is-active") &&
+                    settings.days.indexOf(now.getDay()) !== -1 &&
+                    time === settings.time &&
+                    key !== lastTriggeredMinute
+                ) {
+                    lastTriggeredMinute = key;
+                    triggerAlarm();
+                }
+            }
 
-        if(isDark) {
-            app.classList.add('theme-dark');
-            // 改变精灵表情为暗黑风
-            document.getElementById('mascot-idle').innerHTML = '<span style="transform: translateY(-5px); color: #fff;">≖_≖</span>';
-            document.getElementById('mascot-ringing').innerHTML = '<span style="color: #fff;">◣_◢</span>';
-            document.getElementById('mascot-success').innerHTML = '<span>🧛</span>';
-            document.getElementById('mascot-ringing').classList.replace('bg-yellow-300', 'bg-red-500');
-        } else {
-            app.classList.remove('theme-dark');
-            // 恢复可爱风
-            document.getElementById('mascot-idle').innerHTML = '<span style="transform: translateY(-5px);">- ⩊ -</span>';
-            document.getElementById('mascot-ringing').innerHTML = '<span>O ▱ O</span>';
-            document.getElementById('mascot-success').innerHTML = '<span>😎</span>';
-            document.getElementById('mascot-ringing').classList.replace('bg-red-500', 'bg-yellow-300');
+            function switchView(name) {
+                Object.keys(views).forEach(function (key) {
+                    views[key].classList.toggle("is-active", key === name);
+                });
+            }
 
-            // 恢复背景色
-            if(views.idle.classList.contains('view-active')) app.style.backgroundColor = '#fdf2f8';
-            if(views.ringing.classList.contains('view-active')) app.style.backgroundColor = '#fee2e2';
-            if(views.success.classList.contains('view-active')) app.style.backgroundColor = '#dcfce3';
-        }
-    }
-</script>
+            function pickRandomScene(excludedId) {
+                var candidates = scenePacks.filter(function (scene) {
+                    return scene.id !== excludedId;
+                });
+                return candidates[Math.floor(Math.random() * candidates.length)];
+            }
+
+            function applyScene(scene) {
+                app.style.setProperty("--shell", scene.shell);
+                app.style.setProperty("--accent", scene.accent);
+                app.style.setProperty("--accent-two", scene.accentTwo);
+                document.getElementById("scene-name-top").textContent = scene.scene;
+                document.getElementById("scene-title").textContent = scene.scene;
+                document.getElementById("scene-icon").textContent = scene.icon;
+                document.getElementById("challenge-title").textContent = scene.title;
+                document.getElementById("challenge-prompt").textContent = scene.prompt;
+                document.getElementById("sound-label").textContent =
+                    settings.soundMode === "custom" && customAudio
+                        ? "我的铃声"
+                        : scene.sound;
+
+                var typeLabels = {
+                    pose: "自拍姿势",
+                    voice: "语音互动",
+                    game: "迷你游戏"
+                };
+                document.getElementById("challenge-type").textContent = typeLabels[scene.category];
+
+                document.querySelectorAll(".challenge-panel").forEach(function (panel) {
+                    panel.classList.remove("is-active");
+                });
+                document.getElementById(scene.category + "-panel").classList.add("is-active");
+
+                if (scene.category === "voice") {
+                    document.getElementById("speech-quote").textContent = "“" + scene.phrase + "”";
+                    document.getElementById("speech-status").textContent = "";
+                }
+
+                if (scene.category === "game") {
+                    prepareGame();
+                }
+            }
+
+            function triggerAlarm() {
+                var lastId = localStorage.getItem("funnyAlarmLastScene");
+                currentScene = pickRandomScene(lastId);
+                localStorage.setItem("funnyAlarmLastScene", currentScene.id);
+                applyScene(currentScene);
+                switchView("ringing");
+                startRingtone();
+            }
+
+            function startRingtone() {
+                stopRingtone();
+                soundMuted = false;
+                soundToggle.textContent = "🔊";
+                soundToggle.setAttribute("aria-label", "暂停铃声");
+                soundToggle.title = "暂停铃声";
+
+                if (settings.soundMode === "custom" && customAudio) {
+                    customAudio.currentTime = 0;
+                    customAudio.volume = settings.volume / 100;
+                    customAudio.loop = true;
+                    customAudio.play().catch(function () {
+                        showToast("点击声音按钮播放我的铃声");
+                    });
+                    return;
+                }
+
+                try {
+                    audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+                    masterGain = audioContext.createGain();
+                    masterGain.gain.value = (settings.volume / 100) * 0.16;
+                    masterGain.connect(audioContext.destination);
+                    playMelodyCycle();
+                    toneTimer = window.setInterval(playMelodyCycle, 3400);
+                } catch (error) {
+                    showToast("当前浏览器暂时无法播放模拟铃声");
+                }
+            }
+
+            function playMelodyCycle() {
+                if (!audioContext || !currentScene || soundMuted) {
+                    return;
+                }
+
+                var start = audioContext.currentTime;
+                currentScene.melody.forEach(function (frequency, index) {
+                    var oscillator = audioContext.createOscillator();
+                    var noteGain = audioContext.createGain();
+                    var noteStart = start + index * 0.42;
+                    oscillator.type = index % 2 ? "triangle" : "sine";
+                    oscillator.frequency.value = frequency;
+                    noteGain.gain.setValueAtTime(0.001, noteStart);
+                    noteGain.gain.exponentialRampToValueAtTime(0.8, noteStart + 0.025);
+                    noteGain.gain.exponentialRampToValueAtTime(0.001, noteStart + 0.28);
+                    oscillator.connect(noteGain);
+                    noteGain.connect(masterGain);
+                    oscillator.start(noteStart);
+                    oscillator.stop(noteStart + 0.3);
+                });
+            }
+
+            function stopRingtone() {
+                if (toneTimer) {
+                    window.clearInterval(toneTimer);
+                    toneTimer = null;
+                }
+                if (customAudio) {
+                    customAudio.pause();
+                    customAudio.currentTime = 0;
+                }
+            }
+
+            function toggleRingtone() {
+                soundMuted = !soundMuted;
+                soundToggle.textContent = soundMuted ? "🔇" : "🔊";
+                soundToggle.setAttribute("aria-label", soundMuted ? "继续铃声" : "暂停铃声");
+                soundToggle.title = soundMuted ? "继续铃声" : "暂停铃声";
+
+                if (customAudio && settings.soundMode === "custom") {
+                    if (soundMuted) {
+                        customAudio.pause();
+                    } else {
+                        customAudio.play().catch(function () {});
+                    }
+                }
+            }
+
+            function startCamera() {
+                var placeholder = document.getElementById("camera-placeholder");
+                var button = document.getElementById("camera-button");
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    placeholder.textContent = "这个浏览器无法使用摄像头，已为你准备备用玩法。";
+                    window.setTimeout(swapChallenge, 900);
+                    return;
+                }
+
+                navigator.mediaDevices
+                    .getUserMedia({
+                        video: {
+                            facingMode: "user",
+                            width: { ideal: 720 },
+                            height: { ideal: 720 }
+                        },
+                        audio: false
+                    })
+                    .then(function (stream) {
+                        cameraStream = stream;
+                        document.getElementById("camera-preview").srcObject = stream;
+                        placeholder.classList.add("is-hidden");
+                        button.textContent = "自拍已开启";
+                        button.disabled = true;
+                    })
+                    .catch(function () {
+                        placeholder.textContent = "没有获得摄像头权限，正在换成备用玩法。";
+                        window.setTimeout(swapChallenge, 1100);
+                    });
+            }
+
+            function stopCamera() {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(function (track) {
+                        track.stop();
+                    });
+                    cameraStream = null;
+                }
+                var video = document.getElementById("camera-preview");
+                video.srcObject = null;
+                var placeholder = document.getElementById("camera-placeholder");
+                placeholder.classList.remove("is-hidden");
+                placeholder.textContent = "允许使用前置摄像头，看看今天的搞怪姿势。";
+                var button = document.getElementById("camera-button");
+                button.textContent = "开启自拍";
+                button.disabled = false;
+            }
+
+            function beginPoseHold() {
+                if (!cameraStream) {
+                    startCamera();
+                    showToast("先开启自拍，再摆好姿势");
+                    return;
+                }
+
+                var button = document.getElementById("pose-hold-button");
+                holdStartedAt = Date.now();
+                window.clearInterval(holdTimer);
+                holdTimer = window.setInterval(function () {
+                    var progress = Math.min(100, ((Date.now() - holdStartedAt) / 1600) * 100);
+                    button.style.setProperty("--hold-progress", progress + "%");
+                    if (progress >= 100) {
+                        cancelPoseHold();
+                        completeChallenge();
+                    }
+                }, 50);
+            }
+
+            function cancelPoseHold() {
+                window.clearInterval(holdTimer);
+                holdTimer = null;
+                document.getElementById("pose-hold-button").style.setProperty("--hold-progress", "0%");
+            }
+
+            function startListening() {
+                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                var status = document.getElementById("speech-status");
+                var button = document.getElementById("speech-button");
+
+                if (!SpeechRecognition) {
+                    status.textContent = "当前浏览器不支持语音识别，正在换成备用玩法。";
+                    window.setTimeout(swapChallenge, 1100);
+                    return;
+                }
+
+                recognition = new SpeechRecognition();
+                recognition.lang = currentScene.language || "zh-CN";
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = function () {
+                    button.textContent = "🔴 正在听...";
+                    status.textContent = "把屏幕上的话说出来";
+                };
+
+                recognition.onresult = function (event) {
+                    var transcript = event.results[0][0].transcript.toLowerCase();
+                    var matched = currentScene.keywords.some(function (keyword) {
+                        return transcript.indexOf(keyword.toLowerCase()) !== -1;
+                    });
+                    status.textContent = "听到：“" + transcript + "”";
+                    if (matched) {
+                        window.setTimeout(completeChallenge, 450);
+                    } else {
+                        button.textContent = "🎤 再说一次";
+                        status.textContent += "，再试一次吧";
+                    }
+                };
+
+                recognition.onerror = function () {
+                    button.textContent = "🎤 再试一次";
+                    status.textContent = "没有听清，可以再说一次";
+                };
+
+                recognition.onend = function () {
+                    if (button.textContent.indexOf("正在听") !== -1) {
+                        button.textContent = "🎤 再说一次";
+                    }
+                };
+
+                try {
+                    recognition.start();
+                } catch (error) {
+                    status.textContent = "稍等一下，再点击说话";
+                }
+            }
+
+            function prepareGame() {
+                gameSequence = [];
+                gameIndex = 0;
+                for (var index = 0; index < 4; index += 1) {
+                    gameSequence.push(Math.floor(Math.random() * 4));
+                }
+                renderGameSequence();
+                document.getElementById("game-status").textContent = "照着上面的颜色顺序点击";
+            }
+
+            function renderGameSequence() {
+                var container = document.getElementById("game-sequence");
+                container.innerHTML = "";
+                gameSequence.forEach(function (tone, index) {
+                    var dot = document.createElement("span");
+                    dot.className = "sequence-dot tone-" + tone;
+                    if (index < gameIndex) {
+                        dot.classList.add("is-done");
+                    }
+                    container.appendChild(dot);
+                });
+            }
+
+            function handleGameTap(tone) {
+                if (Number(tone) === gameSequence[gameIndex]) {
+                    gameIndex += 1;
+                    renderGameSequence();
+                    if (gameIndex === gameSequence.length) {
+                        document.getElementById("game-status").textContent = "顺序正确！";
+                        window.setTimeout(completeChallenge, 350);
+                    }
+                    return;
+                }
+
+                gameIndex = 0;
+                renderGameSequence();
+                var gameBox = document.getElementById("game-box");
+                gameBox.classList.remove("shake-once");
+                void gameBox.offsetWidth;
+                gameBox.classList.add("shake-once");
+                document.getElementById("game-status").textContent = "顺序跑掉了，再来一次";
+            }
+
+            function swapChallenge() {
+                stopCamera();
+                if (recognition) {
+                    try {
+                        recognition.abort();
+                    } catch (error) {}
+                }
+                currentScene = pickRandomScene(currentScene ? currentScene.id : "");
+                localStorage.setItem("funnyAlarmLastScene", currentScene.id);
+                applyScene(currentScene);
+                startRingtone();
+                showToast("新的随机开场已送达");
+            }
+
+            function completeChallenge() {
+                cancelPoseHold();
+                stopCamera();
+                stopRingtone();
+                document.getElementById("success-scene").textContent = currentScene.scene;
+                document.getElementById("success-title").textContent = "今天开启成功！";
+                document.getElementById("success-message").textContent = currentScene.feedback;
+                app.style.setProperty("--shell", "#dff8eb");
+                app.style.setProperty("--accent", "#9fe3c2");
+                app.style.setProperty("--accent-two", "#ffe46b");
+                switchView("success");
+            }
+
+            function resetApp() {
+                stopRingtone();
+                stopCamera();
+                app.style.setProperty("--shell", "#fff1f4");
+                app.style.setProperty("--accent", "#ff7f6e");
+                app.style.setProperty("--accent-two", "#6ecdf2");
+                switchView("idle");
+            }
+
+            function openSettings() {
+                alarmTimeInput.value = settings.time;
+                volumeInput.value = settings.volume;
+                document.querySelectorAll(".day-button").forEach(function (button) {
+                    button.classList.toggle(
+                        "is-selected",
+                        settings.days.indexOf(Number(button.dataset.day)) !== -1
+                    );
+                });
+                selectSoundMode(settings.soundMode);
+                settingsDialog.showModal();
+            }
+
+            function closeSettings() {
+                settingsDialog.close();
+            }
+
+            function selectSoundMode(mode) {
+                settings.soundMode = mode;
+                document.querySelectorAll(".segment").forEach(function (button) {
+                    button.classList.toggle("is-selected", button.dataset.soundMode === mode);
+                });
+                document
+                    .getElementById("custom-file-row")
+                    .classList.toggle("is-visible", mode === "custom");
+            }
+
+            function toggleDay(button) {
+                var day = Number(button.dataset.day);
+                var selected = settings.days.indexOf(day);
+                if (selected === -1) {
+                    settings.days.push(day);
+                } else if (settings.days.length > 1) {
+                    settings.days.splice(selected, 1);
+                } else {
+                    showToast("至少保留一天");
+                    return;
+                }
+                button.classList.toggle("is-selected");
+            }
+
+            function handleCustomSound(event) {
+                var file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+                if (customAudioUrl) {
+                    URL.revokeObjectURL(customAudioUrl);
+                }
+                customAudioUrl = URL.createObjectURL(file);
+                customAudio = new Audio(customAudioUrl);
+                document.getElementById("custom-file-name").textContent = file.name;
+                showToast("我的铃声已准备好");
+            }
+
+            function submitSettings(event) {
+                event.preventDefault();
+                settings.time = alarmTimeInput.value;
+                settings.volume = Number(volumeInput.value);
+                saveSettings();
+                updateAlarmSummary();
+                closeSettings();
+                showToast("明早的惊喜已经准备好");
+            }
+
+            function updateAlarmSummary() {
+                document.getElementById("next-alarm-time").textContent = settings.time;
+                var weekdays = [1, 2, 3, 4, 5];
+                var isWeekdays =
+                    settings.days.length === weekdays.length &&
+                    weekdays.every(function (day) {
+                        return settings.days.indexOf(day) !== -1;
+                    });
+                var isEveryDay = settings.days.length === 7;
+                var labels = ["日", "一", "二", "三", "四", "五", "六"];
+                var dayText = isEveryDay
+                    ? "每天"
+                    : isWeekdays
+                        ? "周一至周五"
+                        : settings.days
+                            .slice()
+                            .sort()
+                            .map(function (day) {
+                                return "周" + labels[day];
+                            })
+                            .join("、");
+                document.getElementById("next-alarm-days").textContent =
+                    dayText + " · 每日惊喜";
+            }
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add("is-visible");
+                window.clearTimeout(showToast.timer);
+                showToast.timer = window.setTimeout(function () {
+                    toast.classList.remove("is-visible");
+                }, 1800);
+            }
+
+            document.getElementById("open-settings").addEventListener("click", openSettings);
+            document.getElementById("edit-alarm").addEventListener("click", openSettings);
+            document.getElementById("close-settings").addEventListener("click", closeSettings);
+            document.getElementById("preview-alarm").addEventListener("click", triggerAlarm);
+            document.getElementById("finish-button").addEventListener("click", resetApp);
+            document.getElementById("swap-challenge").addEventListener("click", swapChallenge);
+            document.getElementById("sound-toggle").addEventListener("click", toggleRingtone);
+            document.getElementById("camera-button").addEventListener("click", startCamera);
+            document.getElementById("speech-button").addEventListener("click", startListening);
+            document.getElementById("settings-form").addEventListener("submit", submitSettings);
+            document.getElementById("custom-sound-input").addEventListener("change", handleCustomSound);
+
+            var holdButton = document.getElementById("pose-hold-button");
+            holdButton.addEventListener("pointerdown", beginPoseHold);
+            holdButton.addEventListener("pointerup", cancelPoseHold);
+            holdButton.addEventListener("pointerleave", cancelPoseHold);
+            holdButton.addEventListener("pointercancel", cancelPoseHold);
+
+            document.querySelectorAll(".game-pad").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    handleGameTap(button.dataset.tone);
+                });
+            });
+
+            document.querySelectorAll(".day-button").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    toggleDay(button);
+                });
+            });
+
+            document.querySelectorAll(".segment").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    selectSoundMode(button.dataset.soundMode);
+                });
+            });
+
+            settingsDialog.addEventListener("click", function (event) {
+                if (event.target === settingsDialog) {
+                    closeSettings();
+                }
+            });
+
+            updateAlarmSummary();
+            updateClock();
+            window.setInterval(updateClock, 1000);
+        })();
+    </script>
 </body>
 </html>
