@@ -180,76 +180,38 @@
             place-items: center;
         }
 
-        .spark {
+        .sleep-mark {
             position: absolute;
-            display: grid;
-            place-items: center;
-            width: 30px;
-            height: 30px;
-            border: 3px solid var(--ink);
-            border-radius: 50%;
-            background: var(--yellow);
+            top: 0;
+            color: #94a3b8;
+            font-size: 20px;
             font-weight: 900;
             animation: bob 2.8s ease-in-out infinite;
-        }
-
-        .spark.one {
-            top: 6px;
-            left: 2px;
-        }
-
-        .spark.two {
-            right: 0;
-            bottom: 12px;
-            background: var(--mint);
-            animation-delay: 600ms;
         }
 
         @keyframes bob {
             0%,
             100% {
-                transform: translateY(0) rotate(-5deg);
+                transform: translateY(0);
             }
             50% {
-                transform: translateY(-7px) rotate(5deg);
+                transform: translateY(-7px);
             }
         }
 
         .mascot {
-            width: 142px;
-            height: 118px;
-            display: grid;
-            place-items: center;
+            width: 140px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
-            border: 5px solid var(--ink);
-            border-radius: 58% 48% 55% 45%;
-            background: var(--accent-two);
-            box-shadow: inset -8px -8px 0 rgba(0, 0, 0, 0.08), 6px 6px 0 var(--ink);
-            font-size: 39px;
-            font-weight: 900;
-            transition: transform 180ms ease, background-color 240ms ease;
-        }
-
-        .mascot::before,
-        .mascot::after {
-            content: "";
-            position: absolute;
-            top: -22px;
-            width: 38px;
-            height: 28px;
-            border: 5px solid var(--ink);
-            border-radius: 50% 50% 35% 35%;
-            background: var(--accent);
-        }
-
-        .mascot::before {
-            left: 15px;
-            transform: rotate(-18deg);
-        }
-
-        .mascot::after {
-            right: 15px;
-            transform: rotate(18deg);
+            border: 6px solid #000;
+            border-radius: 60px 50px 70px 40px;
+            background: #bfdbfe;
+            box-shadow: inset -8px -8px 0 rgba(0, 0, 0, 0.1), 6px 6px 0 #000;
+            font-size: 3rem;
+            transition: all 180ms ease;
         }
 
         .mascot.is-sleeping {
@@ -258,12 +220,12 @@
 
         .mascot.is-ringing {
             animation: shake 420ms linear infinite;
-            background: var(--yellow);
+            background: #fde047;
         }
 
         .mascot.is-happy {
-            background: var(--mint);
-            transform: rotate(-3deg) scale(1.04);
+            background: #86efac;
+            transform: scale(1.04);
         }
 
         @keyframes breathe {
@@ -428,19 +390,7 @@
         }
 
         .scene-icon {
-            position: absolute;
-            top: -7px;
-            right: 0;
-            width: 52px;
-            height: 52px;
-            display: grid;
-            place-items: center;
-            border: 4px solid var(--ink);
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 3px 3px 0 var(--ink);
-            font-size: 25px;
-            z-index: 2;
+            display: none;
         }
 
         .challenge-card {
@@ -1007,9 +957,8 @@
 
             <div class="idle-center">
                 <div class="mascot-wrap" aria-hidden="true">
-                    <span class="spark one">?</span>
-                    <div class="mascot is-sleeping">－ᴗ－</div>
-                    <span class="spark two">♪</span>
+                    <span class="sleep-mark">z Z z</span>
+                    <div class="mascot is-sleeping">- ⩊ -</div>
                 </div>
                 <p class="tagline"><span>你永远不知道，今天会怎样开始。</span></p>
             </div>
@@ -1046,7 +995,7 @@
 
             <div class="scene-stage">
                 <div class="mascot-wrap" aria-hidden="true">
-                    <div class="mascot is-ringing">◉▽◉</div>
+                    <div class="mascot is-ringing">O ▱ O</div>
                     <div id="scene-icon" class="scene-icon">✦</div>
                 </div>
 
@@ -1109,9 +1058,7 @@
 
             <div class="success-center">
                 <div class="mascot-wrap" aria-hidden="true">
-                    <span class="spark one">★</span>
-                    <div class="mascot is-happy">⌐■ᴗ■</div>
-                    <span class="spark two">!</span>
+                    <div class="mascot is-happy">😎</div>
                 </div>
                 <div class="success-card">
                     <span id="success-scene" class="pill">今日随机开场</span>
