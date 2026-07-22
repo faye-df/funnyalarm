@@ -28,8 +28,10 @@ public final class SoundEngine: ObservableObject {
         }
 
         do {
+            #if os(iOS)
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .alarm, options: [.duckOthers])
             try AVAudioSession.sharedInstance().setActive(true)
+            #endif
 
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.numberOfLoops = -1 // 循环播放直至挑战完成

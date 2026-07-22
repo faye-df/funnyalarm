@@ -18,7 +18,11 @@ public final class RandomEngine {
         
         // 1. 检查设备能力与权限限制
         let hasCameraPermission = AVCaptureDevice.authorizationStatus(for: .video) == .authorized || AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined
+        #if os(iOS)
         let hasMicPermission = AVAudioSession.sharedInstance().recordPermission == .granted || AVAudioSession.sharedInstance().recordPermission == .undetermined
+        #else
+        let hasMicPermission = true
+        #endif
 
         // 过滤不可用分类
         var eligibleScenes = allScenes.filter { scene in
