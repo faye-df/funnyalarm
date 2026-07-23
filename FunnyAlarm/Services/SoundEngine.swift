@@ -29,7 +29,7 @@ public final class SoundEngine: ObservableObject {
 
         do {
             #if os(iOS)
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .alarm, options: [.duckOthers])
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.duckOthers])
             try AVAudioSession.sharedInstance().setActive(true)
             #endif
 
